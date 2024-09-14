@@ -1,10 +1,3 @@
-//
-//  echoedApp.swift
-//  echoed
-//
-//  Created by Guilherme Mota on 13/09/2024.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -22,11 +15,40 @@ struct echoedApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    init() {
+        setupFloatingPanel()
+    }
 
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
-        .modelContainer(sharedModelContainer)
+    }
+
+    private func setupFloatingPanel() {
+        let panel = NSPanel(
+            contentViewController: NSHostingController(rootView: FloatingNoteView())
+        )
+
+        panel.styleMask = [.titled, .closable, .resizable, .miniaturizable]
+
+        panel.title = "New Echoed"
+        panel.appearance = NSAppearance(named: .aqua)
+        panel.isOpaque = false
+        panel.backgroundColor = .windowBackgroundColor
+        panel.isFloatingPanel = true
+        panel.hidesOnDeactivate = false
+        panel.level = .floating
+        panel.isMovableByWindowBackground = true
+        panel.makeKeyAndOrderFront(nil)
+    }
+
+    
+    private func openSavedNotesWindow() {
+        let newWindow = NSWindow(
+            contentViewController: NSHostingController(rootView: ContentView())
+        )
+        newWindow.makeKeyAndOrderFront(nil)
     }
 }

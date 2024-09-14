@@ -22,9 +22,6 @@ struct ContentView: View {
                         VStack(alignment: .leading) {
                             Text(note.text.prefix(50) + (note.text.count > 50 ? "..." : ""))
                                 .lineLimit(1)
-//                            Text(note.timestamp, format: Date.FormatStyle(date: .numeric, time: .short))
-//                                .font(.caption)
-//                                .foregroundColor(.secondary)
                         }
                     }
                 }
@@ -58,6 +55,7 @@ struct ContentView: View {
         }
     }
 }
+
 #Preview {
     ContentView()
            .modelContainer(for: TranscribedNote.self, inMemory: true)

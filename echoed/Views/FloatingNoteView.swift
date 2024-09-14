@@ -1,24 +1,18 @@
-//
-//  FloatingNoteView.swift
-//  echoed
-//
-//  Created by Guilherme Mota on 14/09/2024.
-//
-
 import SwiftUI
-
 
 struct FloatingNoteView: View {
     @State private var isRecording = false
     @State private var transcribedText = ""
+    @State private var currentDateText: String = ""
     
     var body: some View {
         VStack {
-            Text("Echoed Note")
+            // Display the current date in written format
+            Text(currentDateText)
                 .font(.headline)
             
             TextEditor(text: $transcribedText)
-                .frame(height: 100)
+                .frame(minHeight: 100)
                 .border(Color.gray, width: 1)
             
             HStack {
@@ -33,18 +27,29 @@ struct FloatingNoteView: View {
             }
         }
         .padding()
-        .frame(width: 300, height: 200)
+        .frame(width: 400, height: 300)
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 10)
+        // When the view appears, set the current date in written format
+        .onAppear {
+            currentDateText = formattedDate()
+        }
     }
     
     private func toggleRecording() {
         isRecording.toggle()
         // TODO: Implement actual recording logic
     }
+    
+    // Function to get the current date in a human-readable format
+    private func formattedDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full // Displays full day and date
+        formatter.timeStyle = .short // Displays time (7:15 PM)
+        return formatter.string(from: Date()) // Current date and time
+    }
 }
-
 
 #Preview {
     FloatingNoteView()
