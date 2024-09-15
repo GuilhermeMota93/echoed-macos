@@ -1,56 +1,128 @@
+//
+//  FloatingNoteView.swift
+//  echoed
+//
+//  Created by Guilherme Mota on 13/09/2024.
+//
+
 import SwiftUI
 
 struct FloatingNoteView: View {
-    @State private var isRecording = false
-    @State private var transcribedText = ""
-    @State private var currentDateText: String = ""
+    @StateObject private var viewModel: FloatingNoteViewModel
+    @FocusState private var focusedTranscriptionID: UUID?
+    @State private var showEndSessionDialog = false
+    
+    init(viewModel: FloatingNoteViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
-        VStack {
-            // Display the current date in written format
-            Text(currentDateText)
-                .font(.headline)
+        VStack(spacing: 15) {
+            Text(viewModel.autoSaveMessage)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.top, 10)
             
-            TextEditor(text: $transcribedText)
-                .frame(minHeight: 100)
-                .border(Color.gray, width: 1)
-            
-            HStack {
-                Button(action: toggleRecording) {
-                    Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .foregroundColor(isRecording ? .red : .blue)
-                }
-                
-                Button("Save") {
-                    // TODO: Implement save functionality
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        ForEach(viewModel.transcriptions) { transcription in
+                            VStack(alignment: .leading) {
+                                Text(transcription.timestamp)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                
+                                TextEditor(text: Binding(
+                                    get: {
+                                        transcription.editableText
+                                    },
+                                    set: { newValue in
+                                        if let index = viewModel.transcriptions.firstIndex(where: { $0.id == transcription.id }) {
+                                            viewModel.transcriptions[index].editableText = newValue
+                                        }
+                                    }
+                                ))
+                                .focused(
+                                    $focusedTranscriptionID,
+                                    equals: transcription.id
+                                )
+                                .foregroundColor(.primary)
+                                .multilineTextAlignment(.leading)
+                                .frame(height: 80)
+                                .onChange(of: focusedTranscriptionID, { oldValue, newValue in
+                                    if newValue == transcription.id {
+                                        withAnimation {
+                                            proxy.scrollTo(transcription.id, anchor: .center)
+                                        }
+                                    }
+                                })
+                            }
+                            .padding(.vertical, 5)
+                            .background(Color.clear)
+                            
+                            Divider()
+                        }
+                    }
+                    .padding(EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10))
                 }
             }
+            .frame(minHeight: 200)
+            .background(Color.clear)
+            
+            // Record and End Session buttons
+            HStack(spacing: 0) {
+                // Record button
+                Button(action: {
+                    viewModel.toggleRecording()
+                }, label: {
+                    VStack {
+                        Image(systemName: viewModel.isRecording ? "stop.circle.fill" : "mic.circle.fill")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(viewModel.isRecording ? .red : .blue)
+                    }
+                    .frame(width: 35, height: 35)
+                })
+                
+                Spacer()
+                
+                // End Session button
+                Button(action: {
+                    showEndSessionDialog = true
+                }, label: {
+                    HStack {
+                        Text("End Session")
+                            .foregroundColor(.white)
+                            
+                    }
+                    .frame(width: 130, height: 40)
+                    .background(Color.red.opacity(0.8))
+                })
+                .confirmationDialog(
+                    "Are you sure you want to end this session?",
+                    isPresented: $showEndSessionDialog
+                ) {
+                    Button("Yes", role: .destructive) {
+                        endSession()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
+            }.padding(.bottom, 15)
         }
-        .padding()
-        .frame(width: 400, height: 300)
+        .padding(.horizontal, 20)
+        .frame(width: 400, height: 400)
         .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 10)
-        // When the view appears, set the current date in written format
-        .onAppear {
-            currentDateText = formattedDate()
-        }
     }
     
-    private func toggleRecording() {
-        isRecording.toggle()
-        // TODO: Implement actual recording logic
-    }
-    
-    // Function to get the current date in a human-readable format
-    private func formattedDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .full // Displays full day and date
-        formatter.timeStyle = .short // Displays time (7:15 PM)
-        return formatter.string(from: Date()) // Current date and time
+    private func endSession() {
+        NSApplication.shared.terminate(self)
     }
 }
 
 #Preview {
-    FloatingNoteView()
+    let viewModel = FloatingNoteViewModel(
+        transcriptionService: MockTranscriptionService()
+    )
+    return FloatingNoteView(viewModel: viewModel)
 }
+

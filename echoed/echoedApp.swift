@@ -1,3 +1,10 @@
+//
+//  echoedApp.swift
+//  echoed
+//
+//  Created by Guilherme Mota on 13/09/2024.
+//
+
 import SwiftUI
 import SwiftData
 
@@ -27,12 +34,14 @@ struct echoedApp: App {
     }
 
     private func setupFloatingPanel() {
+        let transcriptionService = MockTranscriptionService() //TranscriptionService()
+        let viewModel = FloatingNoteViewModel(transcriptionService: transcriptionService)
+
         let panel = NSPanel(
-            contentViewController: NSHostingController(rootView: FloatingNoteView())
+            contentViewController: NSHostingController(rootView: FloatingNoteView(viewModel: viewModel))
         )
 
         panel.styleMask = [.titled, .closable, .resizable, .miniaturizable]
-
         panel.title = "New Echoed"
         panel.appearance = NSAppearance(named: .aqua)
         panel.isOpaque = false
@@ -42,13 +51,5 @@ struct echoedApp: App {
         panel.level = .floating
         panel.isMovableByWindowBackground = true
         panel.makeKeyAndOrderFront(nil)
-    }
-
-    
-    private func openSavedNotesWindow() {
-        let newWindow = NSWindow(
-            contentViewController: NSHostingController(rootView: ContentView())
-        )
-        newWindow.makeKeyAndOrderFront(nil)
     }
 }
