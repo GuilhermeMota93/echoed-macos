@@ -119,10 +119,10 @@ struct FloatingNoteView: View {
     }
 }
 
-#Preview {
-    let viewModel = FloatingNoteViewModel(
-        transcriptionService: MockTranscriptionService()
-    )
-    return FloatingNoteView(viewModel: viewModel)
-}
+//#Preview {
+//    let viewModel = FloatingNoteViewModel(
+//        transcriptionService: MockTranscriptionService()
+//    )
+//    return FloatingNoteView(viewModel: viewModel)
+//}
 
