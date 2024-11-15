@@ -9,63 +9,62 @@ import SwiftUI
 import SwiftData
 import Combine
 
+@MainActor
 class EchoListViewModel: ObservableObject {
-    @Published var notes: [TranscribedNote] = []
-    @Published var selectedNote: TranscribedNote?
-    
-    let modelContext: ModelContext
-    
+    var modelContext: ModelContext {
+        didSet {
+            fetchNotes()
+        }
+    }
     private var cancellables = Set<AnyCancellable>()
-
+    
+    @Published var notes: [TranscribedNote] = []
+    
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
-        loadNotes()
-    }
-
-    func loadNotes() {
-        func loadNotes() {
-            // Fetch notes from SwiftData and update the `notes` property.
-            do {
-                notes = try modelContext.fetch(
-                    FetchDescriptor<TranscribedNote>() // Updated to use FetchDescriptor
-                )
-            } catch {
-                print("[EchoListViewModel] | Failed to fetch notes: \(error)")
-            }
-        }
-    }
-
-    func addNote() {
-        let newNote = TranscribedNote(timestamp: Date(), text: "New note", duration: 0, isUserEdited: false)
-        modelContext.insert(newNote)
+        fetchNotes()
         
-        do {
-            try modelContext.save()
-            notes.append(newNote)  // Append the new note to the list
-            selectedNote = newNote  // Automatically select the newly created note
-        } catch {
-            print("Failed to save new note: \(error)")
-        }
+//        modelContext.objectWillChange
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                self?.fetchNotes()
+//            }
+//            .store(in: &cancellables)
     }
-
-    func deleteNotes(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(notes[index])
-        }
-        
+    
+    func fetchNotes() {
+        let fetchDescriptor = FetchDescriptor<TranscribedNote>()
         do {
-            try modelContext.save()
-            notes.remove(atOffsets: offsets)
+            notes = try modelContext.fetch(fetchDescriptor)
         } catch {
-            print("Failed to delete notes: \(error)")
+            print("Failed to fetch notes: \(error)")
         }
     }
     
-    private func saveChanges() {
+    func addNote(title: String, content: String) {
+        let newNote = TranscribedNote(title: title, content: content)
+        modelContext.insert(newNote)
+        saveContext()
+    }
+    
+    func deleteNote(_ note: TranscribedNote) {
+        modelContext.delete(note)
+        saveContext()
+    }
+    
+    func deleteNotes(at offsets: IndexSet) {
+        offsets.forEach { index in
+            let note = notes[index]
+            modelContext.delete(note)
+        }
+        saveContext()
+    }
+    
+    private func saveContext() {
         do {
             try modelContext.save()
         } catch {
-            print("Failed to save changes: \(error)")
+            print("Failed to save context: \(error)")
         }
     }
 }

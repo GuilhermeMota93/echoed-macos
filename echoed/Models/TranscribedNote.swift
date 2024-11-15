@@ -8,22 +8,24 @@
 import Foundation
 import SwiftData
 
-@Model
-final class TranscribedNote {
-    var timestamp: Date
-    var text: String
-    var duration: TimeInterval
-    var isUserEdited: Bool
+/**
+ NOTE: To add new fields in the future, simply introduce new properties with the @Attribute macro. SwiftData will handle migrations gracefully, especially if you’re using lightweight migrations.
+ 
+ Example: Adding a category Field:
+ @Attribute var category: String
+ */
 
-    init(
-        timestamp: Date = Date(),
-        text: String,
-        duration: TimeInterval,
-        isUserEdited: Bool = false
-    ) {
+@Model
+final class TranscribedNote: Identifiable, ObservableObject {
+    @Attribute var id: UUID
+    @Attribute var title: String
+    @Attribute var content: String
+    @Attribute var timestamp: Date
+
+    init(id: UUID = UUID(), title: String, content: String, timestamp: Date = Date()) {
+        self.id = id
+        self.title = title
+        self.content = content
         self.timestamp = timestamp
-        self.text = text
-        self.duration = duration
-        self.isUserEdited = isUserEdited
     }
 }
