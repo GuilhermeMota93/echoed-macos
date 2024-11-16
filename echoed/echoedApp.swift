@@ -15,11 +15,7 @@ struct EchoedNotesApp: App {
 
     init() {
         do {
-            // Initialize ModelContainer with your model types
             container = try ModelContainer(for: TranscribedNote.self)
-            
-            // Optionally, configure in-memory storage for testing
-            // container = try ModelContainer(for: TranscribedNote.self, inMemory: true)
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
@@ -27,8 +23,8 @@ struct EchoedNotesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            EchoListView()
-                .modelContainer(container) // Injects ModelContext into the environment
+            EchoListView(viewModel: EchoListViewModel(modelContext: container.mainContext))
+                .modelContainer(container) // Inject ModelContext
         }
     }
 }

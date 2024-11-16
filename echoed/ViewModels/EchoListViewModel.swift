@@ -9,62 +9,72 @@ import SwiftUI
 import SwiftData
 import Combine
 
-@MainActor
 class EchoListViewModel: ObservableObject {
-    var modelContext: ModelContext {
-        didSet {
-            fetchNotes()
-        }
-    }
-    private var cancellables = Set<AnyCancellable>()
-    
-    @Published var notes: [TranscribedNote] = []
-    
+    @Published var selectedNote: TranscribedNote? = nil
+    @Published var selectedForBulkDelete: Set<TranscribedNote> = []
+    @Published var isShowingDeleteConfirmation = false
+    @Published var notes: [TranscribedNote] = [] // Fetched notes
+
+    private var modelContext: ModelContext
+    private var lastSelectedNote: TranscribedNote? = nil
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         fetchNotes()
-        
-//        modelContext.objectWillChange
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] _ in
-//                self?.fetchNotes()
-//            }
-//            .store(in: &cancellables)
     }
-    
+
     func fetchNotes() {
-        let fetchDescriptor = FetchDescriptor<TranscribedNote>()
+        let fetchDescriptor = FetchDescriptor<TranscribedNote>(
+            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+        )
         do {
             notes = try modelContext.fetch(fetchDescriptor)
         } catch {
             print("Failed to fetch notes: \(error)")
+            notes = []
         }
     }
-    
-    func addNote(title: String, content: String) {
-        let newNote = TranscribedNote(title: title, content: content)
+
+    func addNewNote() {
+        let newNote = TranscribedNote(title: "New Note", timestamp: Date())
         modelContext.insert(newNote)
-        saveContext()
-    }
-    
-    func deleteNote(_ note: TranscribedNote) {
-        modelContext.delete(note)
-        saveContext()
-    }
-    
-    func deleteNotes(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let note = notes[index]
-            modelContext.delete(note)
-        }
-        saveContext()
-    }
-    
-    private func saveContext() {
+
         do {
             try modelContext.save()
+            fetchNotes()
+            selectedNote = newNote
         } catch {
-            print("Failed to save context: \(error)")
+            print("Failed to save new note: \(error)")
+        }
+    }
+
+    func deleteNotes(_ notesToDelete: Set<TranscribedNote>) {
+        notesToDelete.forEach { modelContext.delete($0) }
+
+        do {
+            try modelContext.save()
+            fetchNotes()
+            selectedNote = nil
+            selectedForBulkDelete.removeAll()
+        } catch {
+            print("Failed to delete notes: \(error)")
+        }
+    }
+
+    func selectSingle(note: TranscribedNote) {
+        selectedNote = note
+        selectedForBulkDelete = [note]
+    }
+
+    func confirmBulkDelete() {
+        isShowingDeleteConfirmation = true
+    }
+
+    func backgroundColor(for note: TranscribedNote) -> Color {
+        if selectedForBulkDelete.contains(note) {
+            return Color.blue.opacity(0.2)
+        } else {
+            return Color.clear
         }
     }
 }
