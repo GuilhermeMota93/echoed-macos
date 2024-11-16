@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct EchoListView: View {
-    @ObservedObject var viewModel: EchoListViewModel // Injected ViewModel
-
+    @ObservedObject var viewModel: EchoListViewModel
+    
     var body: some View {
         NavigationSplitView {
             List(selection: $viewModel.selectedNote) {
@@ -27,7 +27,7 @@ struct EchoListView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)
-                    .background(viewModel.backgroundColor(for: note))
+                    .background(noteBackgroundColor(for: note))
                     .cornerRadius(8)
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -68,10 +68,10 @@ struct EchoListView: View {
             Text("Are you sure you want to delete \(viewModel.selectedForBulkDelete.count) notes?")
         }
         .onAppear {
-            viewModel.fetchNotes() // Fetch notes when the view appears
+            viewModel.fetchNotes()
         }
     }
-
+    
     /// Handle tap gesture, detecting modifiers for multi-select
     private func handleTapGesture(for note: TranscribedNote) {
         let modifiers = NSApp.currentEvent?.modifierFlags ?? []
@@ -83,23 +83,32 @@ struct EchoListView: View {
             viewModel.selectSingle(note: note)
         }
     }
+    
+    /// Determine the background color for a note
+    private func noteBackgroundColor(for note: TranscribedNote) -> Color {
+        if viewModel.selectedForBulkDelete.contains(note) {
+            return Color.blue.opacity(0.2)
+        } else {
+            return Color.clear
+        }
+    }
 }
 
 struct EchoListView_Previews: PreviewProvider {
     static var previews: some View {
-        // Create an in-memory ModelContainer for testing
+        // In-memory ModelContainer for testing
         let container = try! ModelContainer(for: TranscribedNote.self)
-
-        // Create a mock EchoListViewModel using the in-memory context
+        
+        // Mock EchoListViewModel using the in-memory context
         let mockViewModel = EchoListViewModel(modelContext: container.mainContext)
-
-        // Insert mock data for preview
+        
+        // Mock data for preview
         let previewNotes = [
             TranscribedNote(title: "First Note", timestamp: Date().addingTimeInterval(-3600)),
             TranscribedNote(title: "Second Note", timestamp: Date())
         ]
         previewNotes.forEach { container.mainContext.insert($0) }
-
+        
         return EchoListView(viewModel: mockViewModel)
             .modelContainer(container) // Inject the in-memory container
     }

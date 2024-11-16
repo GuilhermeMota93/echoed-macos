@@ -15,7 +15,7 @@ class EchoListViewModel: ObservableObject {
     @Published var selectedForBulkDelete: Set<TranscribedNote> = []
     @Published var isShowingDeleteConfirmation = false
     @Published var notes: [TranscribedNote] = [] // Fetched notes
-    @Published var lastSelectedNote: TranscribedNote? = nil // Track the last selected note for range selection
+    @Published var lastSelectedNote: TranscribedNote? = nil
 
     private var modelContext: ModelContext
 
@@ -99,13 +99,5 @@ class EchoListViewModel: ObservableObject {
 
     func confirmBulkDelete() {
         isShowingDeleteConfirmation = true
-    }
-
-    func backgroundColor(for note: TranscribedNote) -> Color {
-        if selectedForBulkDelete.contains(note) {
-            return Color.blue.opacity(0.2)
-        } else {
-            return Color.clear
-        }
     }
 }
