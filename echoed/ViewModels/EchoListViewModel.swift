@@ -5,6 +5,7 @@
 //  Created by Guilherme Mota on 25/10/2024.
 //
 
+
 import SwiftUI
 import SwiftData
 import Combine
@@ -14,9 +15,9 @@ class EchoListViewModel: ObservableObject {
     @Published var selectedForBulkDelete: Set<TranscribedNote> = []
     @Published var isShowingDeleteConfirmation = false
     @Published var notes: [TranscribedNote] = [] // Fetched notes
+    @Published var lastSelectedNote: TranscribedNote? = nil // Track the last selected note for range selection
 
     private var modelContext: ModelContext
-    private var lastSelectedNote: TranscribedNote? = nil
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -61,9 +62,39 @@ class EchoListViewModel: ObservableObject {
         }
     }
 
+    /// Single selection
     func selectSingle(note: TranscribedNote) {
         selectedNote = note
         selectedForBulkDelete = [note]
+        lastSelectedNote = note
+    }
+
+    /// Range selection (Shift-click)
+    func selectRange(from startNote: TranscribedNote?, to endNote: TranscribedNote) {
+        guard let startNote = startNote else {
+            selectedForBulkDelete.insert(endNote)
+            lastSelectedNote = endNote
+            return
+        }
+
+        if let startIndex = notes.firstIndex(of: startNote),
+           let endIndex = notes.firstIndex(of: endNote) {
+            let range = startIndex < endIndex
+                ? notes[startIndex...endIndex]
+                : notes[endIndex...startIndex]
+
+            selectedForBulkDelete.formUnion(range)
+            lastSelectedNote = endNote
+        }
+    }
+
+    /// Toggle selection of a single note (Cmd-click)
+    func toggleSelection(note: TranscribedNote) {
+        if selectedForBulkDelete.contains(note) {
+            selectedForBulkDelete.remove(note)
+        } else {
+            selectedForBulkDelete.insert(note)
+        }
     }
 
     func confirmBulkDelete() {

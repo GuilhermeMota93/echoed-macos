@@ -31,7 +31,7 @@ struct EchoListView: View {
                     .cornerRadius(8)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        viewModel.selectSingle(note: note)
+                        handleTapGesture(for: note)
                     }
                 }
             }
@@ -69,6 +69,18 @@ struct EchoListView: View {
         }
         .onAppear {
             viewModel.fetchNotes() // Fetch notes when the view appears
+        }
+    }
+
+    /// Handle tap gesture, detecting modifiers for multi-select
+    private func handleTapGesture(for note: TranscribedNote) {
+        let modifiers = NSApp.currentEvent?.modifierFlags ?? []
+        if modifiers.contains(.shift) {
+            viewModel.selectRange(from: viewModel.lastSelectedNote, to: note)
+        } else if modifiers.contains(.command) {
+            viewModel.toggleSelection(note: note)
+        } else {
+            viewModel.selectSingle(note: note)
         }
     }
 }
