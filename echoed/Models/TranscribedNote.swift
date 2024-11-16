@@ -17,13 +17,11 @@ import SwiftData
 
 @Model
 final class TranscribedNote: Identifiable, ObservableObject {
-    @Attribute var id: UUID
     @Attribute var title: String
-    @Attribute var content: String
+    @Attribute var content: String? // Now properly annotated
     @Attribute var timestamp: Date
 
-    init(id: UUID = UUID(), title: String, content: String, timestamp: Date = Date()) {
-        self.id = id
+    init(title: String, content: String? = nil, timestamp: Date = Date()) {
         self.title = title
         self.content = content
         self.timestamp = timestamp

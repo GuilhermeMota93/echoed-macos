@@ -10,22 +10,25 @@ import SwiftData
 import Combine
 
 @main
-struct echoedApp: App {
-    // Shared ModelContainer across the app
-    let sharedModelContainer: ModelContainer = {
+struct EchoedNotesApp: App {
+    let container: ModelContainer
+
+    init() {
         do {
-            let modelConfiguration = ModelConfiguration(for: TranscribedNote.self, isStoredInMemoryOnly: false)
-            return try ModelContainer(for: TranscribedNote.self, configurations: modelConfiguration)
+            // Initialize ModelContainer with your model types
+            container = try ModelContainer(for: TranscribedNote.self)
+            
+            // Optionally, configure in-memory storage for testing
+            // container = try ModelContainer(for: TranscribedNote.self, inMemory: true)
         } catch {
-            print("Failed to create ModelContainer: \(error.localizedDescription)")
-            fatalError("Could not create ModelContainer: \(error)")
+            fatalError("Failed to initialize ModelContainer: \(error)")
         }
-    }()
-    
+    }
+
     var body: some Scene {
         WindowGroup {
             EchoListView()
-                .modelContainer(sharedModelContainer) // Inject the model container into the environment
+                .modelContainer(container) // Injects ModelContext into the environment
         }
     }
 }
