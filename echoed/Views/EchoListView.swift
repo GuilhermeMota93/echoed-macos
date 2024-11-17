@@ -52,7 +52,12 @@ struct EchoListView: View {
             }
         } detail: {
             if let selectedNote = viewModel.selectedNote {
-                NoteDetailView(note: selectedNote)
+                NoteDetailView(
+                    viewModel: NoteDetailViewModel(
+                        note: selectedNote,
+                        transcriptionService: MockTranscriptionService()
+                    )
+                )
             } else {
                 Text("Select or create a new note to begin.")
                     .foregroundColor(.secondary)

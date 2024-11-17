@@ -8,38 +8,52 @@
 import SwiftUI
 import Foundation
 
-extension Binding {
-    /// Helper to replace nil values with a default value
-    init(_ source: Binding<Value?>, replacingNilWith defaultValue: Value) {
-        self.init(
-            get: { source.wrappedValue ?? defaultValue },
-            set: { newValue in source.wrappedValue = newValue }
-        )
+import SwiftUI
+import Foundation
+
+struct NoteDetailView: View {
+    @ObservedObject var viewModel: NoteDetailViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Button(action: viewModel.captureLast30Seconds) {
+                    Label("Get Last 30 Seconds", systemImage: "scissors")
+                        .foregroundColor(.blue)
+                        .font(.title2)
+                }
+                Spacer()
+            }
+            .padding(.bottom)
+
+            TextEditor(text: $viewModel.noteContent)
+                .padding()
+                .background(Color(NSColor.textBackgroundColor))
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                )
+
+            Spacer()
+        }
+        .padding()
     }
 }
 
-struct NoteDetailView: View {
-    @Bindable var note: TranscribedNote // Automatically updates the SwiftData model
+struct NoteDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let mockNote = TranscribedNote(
+            title: "Sample Note",
+            content: "This is a test note.",
+            timestamp: Date()
+        )
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            TextField("Title", text: $note.title)
-                .font(.title)
-                .textFieldStyle(.roundedBorder)
-                .padding(.bottom, 10)
+        let mockViewModel = NoteDetailViewModel(
+            note: mockNote,
+            transcriptionService: MockTranscriptionService()
+        )
 
-            TextEditor(text: Binding($note.content, replacingNilWith: ""))
-                .padding()
-                .background(Color(.secondaryLabelColor))
-                .cornerRadius(8)
-                .frame(minHeight: 300)
-
-            Spacer()
-
-            Text(note.timestamp, format: .dateTime)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding()
+        return NoteDetailView(viewModel: mockViewModel)
     }
 }
