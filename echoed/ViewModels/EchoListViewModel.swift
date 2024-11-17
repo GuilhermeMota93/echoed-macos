@@ -17,7 +17,7 @@ class EchoListViewModel: ObservableObject {
     @Published var notes: [TranscribedNote] = [] // Fetched notes
     @Published var lastSelectedNote: TranscribedNote? = nil
 
-    private var modelContext: ModelContext
+    var modelContext: ModelContext
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext

@@ -31,7 +31,7 @@ struct EchoListView: View {
                     .cornerRadius(8)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        handleTapGesture(for: note)
+                        viewModel.selectSingle(note: note)
                     }
                 }
             }
@@ -55,6 +55,7 @@ struct EchoListView: View {
                 NoteDetailView(
                     viewModel: NoteDetailViewModel(
                         note: selectedNote,
+                        modelContext: viewModel.modelContext,
                         transcriptionService: MockTranscriptionService()
                     )
                 )
