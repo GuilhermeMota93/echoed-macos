@@ -21,6 +21,14 @@ class NoteDetailViewModel: ObservableObject {
         self.note = note
         self.modelContext = modelContext
         self.transcriptionService = transcriptionService
+
+        // Start the transcription service
+        self.startListening()
+    }
+
+    deinit {
+        // Stop listening when the view model is deallocated
+        self.stopListening()
     }
 
     /// Capture the last 30 seconds and append transcription
@@ -44,5 +52,15 @@ class NoteDetailViewModel: ObservableObject {
         } catch {
             print("Failed to save note: \(error)")
         }
+    }
+
+    /// Start continuous listening for audio
+    private func startListening() {
+        transcriptionService.startListening()
+    }
+
+    /// Stop listening for audio
+    private func stopListening() {
+        transcriptionService.stopListening()
     }
 }

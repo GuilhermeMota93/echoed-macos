@@ -7,12 +7,16 @@
 
 import SwiftUI
 import SwiftData
+import AVFoundation
 
 struct EchoListView: View {
     @ObservedObject var viewModel: EchoListViewModel
+    @State private var isMicrophoneAccessGranted: Bool = true // Tracks microphone permission
+    @State private var showPermissionAlert: Bool = false // Controls the alert visibility
     
     var body: some View {
         NavigationSplitView {
+            // Main List of Notes
             List(selection: $viewModel.selectedNote) {
                 ForEach(viewModel.notes) { note in
                     HStack {
@@ -31,23 +35,42 @@ struct EchoListView: View {
                     .cornerRadius(8)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        viewModel.selectSingle(note: note)
+                        if isMicrophoneAccessGranted { // Only handle tap gestures if permissions are granted
+                            viewModel.selectSingle(note: note)
+                        }
                     }
                 }
             }
             .frame(minWidth: 250, idealWidth: 300, maxWidth: 300)
             .navigationTitle("Echoed Notes")
             .toolbar {
+                // Add Note Button
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: viewModel.addNewNote) {
                         Label("Add Note", systemImage: "plus")
                     }
+                    .disabled(!isMicrophoneAccessGranted) // Disable if permissions are off
                 }
+
+                // Delete Button
                 ToolbarItem(placement: .destructiveAction) {
                     Button(action: viewModel.confirmBulkDelete) {
                         Label("Delete", systemImage: "trash")
                     }
-                    .disabled(viewModel.selectedForBulkDelete.isEmpty)
+                    .disabled(viewModel.selectedForBulkDelete.isEmpty || !isMicrophoneAccessGranted) // Disable if no selection or permissions are off
+                }
+
+                // Red Info Button (if permissions are off)
+                ToolbarItem(placement: .primaryAction) {
+                    if !isMicrophoneAccessGranted {
+                        Button(action: {
+                            showPermissionAlert = true
+                        }) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundColor(.red)
+                        }
+                        .help("Microphone permissions are off")
+                    }
                 }
             }
         } detail: {
@@ -59,6 +82,7 @@ struct EchoListView: View {
                         transcriptionService: MockTranscriptionService()
                     )
                 )
+                .disabled(!isMicrophoneAccessGranted) // Disable interaction if permissions are off
             } else {
                 Text("Select or create a new note to begin.")
                     .foregroundColor(.secondary)
@@ -75,18 +99,12 @@ struct EchoListView: View {
         }
         .onAppear {
             viewModel.fetchNotes()
+            checkMicrophonePermissions()
         }
-    }
-    
-    /// Handle tap gesture, detecting modifiers for multi-select
-    private func handleTapGesture(for note: TranscribedNote) {
-        let modifiers = NSApp.currentEvent?.modifierFlags ?? []
-        if modifiers.contains(.shift) {
-            viewModel.selectRange(from: viewModel.lastSelectedNote, to: note)
-        } else if modifiers.contains(.command) {
-            viewModel.toggleSelection(note: note)
-        } else {
-            viewModel.selectSingle(note: note)
+        .alert("Permission Issue", isPresented: $showPermissionAlert) {
+            Button("OK") {}
+        } message: {
+            Text("Microphone access is required for transcription. Go to System Settings -> Privacy -> Microphone to enable it.")
         }
     }
     
@@ -97,6 +115,12 @@ struct EchoListView: View {
         } else {
             return Color.clear
         }
+    }
+    
+    /// Checks the current microphone permission status
+    private func checkMicrophonePermissions() {
+        let status = AVCaptureDevice.authorizationStatus(for: .audio)
+        isMicrophoneAccessGranted = (status == .authorized)
     }
 }
 
