@@ -9,67 +9,72 @@ import SwiftUI
 import SwiftData
 import AVFoundation
 
+import SwiftUI
+import SwiftData
+import AVFoundation
+
 struct EchoListView: View {
     @ObservedObject var viewModel: EchoListViewModel
-    @State private var isMicrophoneAccessGranted: Bool = true // Tracks microphone permission
-    @State private var showPermissionAlert: Bool = false // Controls the alert visibility
-    
+    @State private var isMicrophoneAccessGranted: Bool = true
+    @State private var showPermissionAlert: Bool = false
+
     var body: some View {
         NavigationSplitView {
-            // Main List of Notes
-            List(selection: $viewModel.selectedNote) {
-                ForEach(viewModel.notes) { note in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(note.title)
-                                .font(.headline)
-                            Text(note.timestamp, format: .dateTime)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+            ScrollViewReader { proxy in
+                List(selection: $viewModel.selectedNote) {
+                    ForEach(viewModel.notes) { note in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(note.title)
+                                    .font(.headline)
+                                Text(note.timestamp, format: Date.FormatStyle()
+                                    .day().month(.abbreviated).year()
+                                    .hour().minute().second()) // Full timestamp format
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 8)
                         }
-                        .padding(.vertical, 8)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 4)
-                    .background(noteBackgroundColor(for: note))
-                    .cornerRadius(8)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if isMicrophoneAccessGranted { // Only handle tap gestures if permissions are granted
-                            viewModel.selectSingle(note: note)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 4)
+                        .background(noteBackgroundColor(for: note))
+                        .cornerRadius(8)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            handleTapGesture(for: note)
                         }
+                        .id(note.id) // Assign a unique ID to each note for scrolling
                     }
                 }
-            }
-            .frame(minWidth: 250, idealWidth: 300, maxWidth: 300)
-            .navigationTitle("Echoed Notes")
-            .toolbar {
-                // Add Note Button
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: viewModel.addNewNote) {
-                        Label("Add Note", systemImage: "plus")
-                    }
-                    .disabled(!isMicrophoneAccessGranted) // Disable if permissions are off
-                }
-
-                // Delete Button
-                ToolbarItem(placement: .destructiveAction) {
-                    Button(action: viewModel.confirmBulkDelete) {
-                        Label("Delete", systemImage: "trash")
-                    }
-                    .disabled(viewModel.selectedForBulkDelete.isEmpty || !isMicrophoneAccessGranted) // Disable if no selection or permissions are off
-                }
-
-                // Red Info Button (if permissions are off)
-                ToolbarItem(placement: .primaryAction) {
-                    if !isMicrophoneAccessGranted {
+                .frame(minWidth: 250, idealWidth: 300, maxWidth: 300)
+                .navigationTitle("Echoed Notes")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            showPermissionAlert = true
+                            viewModel.addNewNote()
+                            scrollToNewNote(proxy: proxy) // Scroll to the newly added note
                         }) {
-                            Image(systemName: "exclamationmark.circle.fill")
-                                .foregroundColor(.red)
+                            Label("Add Note", systemImage: "plus")
                         }
-                        .help("Microphone permissions are off")
+                        .disabled(!isMicrophoneAccessGranted)
+                    }
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button(action: viewModel.confirmBulkDelete) {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .disabled(viewModel.selectedForBulkDelete.isEmpty || !isMicrophoneAccessGranted)
+                    }
+
+                    ToolbarItem(placement: .primaryAction) {
+                        if !isMicrophoneAccessGranted {
+                            Button(action: {
+                                showPermissionAlert = true
+                            }) {
+                                Image(systemName: "exclamationmark.circle.fill")
+                                    .foregroundColor(.red)
+                            }
+                            .help("Microphone permissions are off")
+                        }
                     }
                 }
             }
@@ -82,7 +87,7 @@ struct EchoListView: View {
                         transcriptionService: MockTranscriptionService()
                     )
                 )
-                .disabled(!isMicrophoneAccessGranted) // Disable interaction if permissions are off
+                .disabled(!isMicrophoneAccessGranted)
             } else {
                 Text("Select or create a new note to begin.")
                     .foregroundColor(.secondary)
@@ -107,7 +112,31 @@ struct EchoListView: View {
             Text("Microphone access is required for transcription. Go to System Settings -> Privacy -> Microphone to enable it.")
         }
     }
-    
+
+    /// Scrolls to the newly added note
+    private func scrollToNewNote(proxy: ScrollViewProxy) {
+        if let newNote = viewModel.selectedNote {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // Small delay ensures the note is added
+                proxy.scrollTo(newNote.id, anchor: .center)
+            }
+        }
+    }
+
+    /// Handle tap gesture, detecting modifiers for multi-select or range select
+    private func handleTapGesture(for note: TranscribedNote) {
+        let modifiers = NSApp.currentEvent?.modifierFlags ?? []
+        if modifiers.contains(.shift) {
+            // Range select (Shift-click)
+            viewModel.selectRange(from: viewModel.lastSelectedNote, to: note)
+        } else if modifiers.contains(.command) {
+            // Toggle selection (Cmd-click)
+            viewModel.toggleSelection(note: note)
+        } else {
+            // Single selection
+            viewModel.selectSingle(note: note)
+        }
+    }
+
     /// Determine the background color for a note
     private func noteBackgroundColor(for note: TranscribedNote) -> Color {
         if viewModel.selectedForBulkDelete.contains(note) {
@@ -116,7 +145,7 @@ struct EchoListView: View {
             return Color.clear
         }
     }
-    
+
     /// Checks the current microphone permission status
     private func checkMicrophonePermissions() {
         let status = AVCaptureDevice.authorizationStatus(for: .audio)
