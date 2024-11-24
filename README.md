@@ -1,8 +1,10 @@
 # echoed-macos 🎙️📝
 
-Did you ever had that moment during a call where you go "I want to say a couple of things about X...ugh...it slipped my mind, but it was important." Meet **echoed**!
+Did you ever had that moment during a call where you go _"I want to say a couple of things about X...ugh...it slipped my mind, but it was important." Meet **echoed**!_
 
-**echoed** is a lightweight macOS app designed to enhance your productivity during online meetings. It helps you capture, transcribe, and organize key moments effortlessly.
+**echoed** is a lightweight macOS app designed to enhance your productivity during online meetings: grab the last 30 seconds of the meeting, transcribes and adds as bullet list items in notes directly.
+
+So you can capture, transcribe, and organize key moments effortlessly without having to lose track of the current discussion.
 
 Everything is local, just as if you would make the time to jot something down, **echoed** does it for you.
 
