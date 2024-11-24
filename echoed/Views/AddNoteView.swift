@@ -22,12 +22,10 @@ struct AddNoteView: View {
                 .bold()
                 .padding(.bottom, 10)
 
-            // Title Input
             TextField("Title", text: $title)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding(.bottom, 10)
 
-            // Content Input
             TextEditor(text: $content)
                 .padding(4)
                 .background(Color(NSColor.windowBackgroundColor))
@@ -45,14 +43,14 @@ struct AddNoteView: View {
                 Button("Cancel") {
                     dismiss()
                 }
-                .keyboardShortcut(.cancelAction) // Cmd + .
+                .keyboardShortcut(.cancelAction)
                 .padding()
 
                 Button("Save") {
                     saveNote()
                     dismiss()
                 }
-                .keyboardShortcut(.defaultAction) // Enter key
+                .keyboardShortcut(.defaultAction)
                 .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty ||
                           content.trimmingCharacters(in: .whitespaces).isEmpty)
                 .padding()
@@ -76,7 +74,6 @@ struct AddNoteView: View {
         do {
             try modelContext.save()
         } catch {
-            // Handle the error appropriately in a real app
             print("Failed to save note: \(error)")
         }
     }
@@ -84,7 +81,6 @@ struct AddNoteView: View {
 
 struct AddNoteView_Previews: PreviewProvider {
     static var previews: some View {
-        // Provide a mock ModelContext for previews
         let container = try! ModelContainer(for: TranscribedNote.self)
         let modelContext = ModelContext(container)
         AddNoteView()
