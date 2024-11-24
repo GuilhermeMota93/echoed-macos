@@ -16,15 +16,14 @@ struct NoteDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             TextField("Enter title...", text: $viewModel.note.title)
                 .font(.title)
-                .textFieldStyle(.plain) // Removes the default TextField styling
+                .textFieldStyle(.plain)
                 .onChange(of: viewModel.note.title) { oldValue, newValue in
-                    viewModel.saveChanges() // Save title changes automatically
+                    viewModel.saveChanges() 
                 }
             
-            // Note Content Editor
             TextEditor(text: Binding(
-                get: { viewModel.note.content ?? "" }, // Replace nil with an empty string
-                set: { viewModel.note.content = $0 } // Update the optional content
+                get: { viewModel.note.content ?? "" }, 
+                set: { viewModel.note.content = $0 }
             ))
             .padding()
             .background(Color(NSColor.textBackgroundColor))
@@ -35,10 +34,9 @@ struct NoteDetailView: View {
             )
             .frame(maxHeight: .infinity)
             
-            // "Clip Last 30 Seconds" Button
             Button(action: viewModel.captureLast30Seconds) {
                 Label("Clip", systemImage: "scissors")
-                    .frame(maxWidth: 80, maxHeight: 30) // Optional: Set dimensions
+                    .frame(maxWidth: 80, maxHeight: 30) 
             }
             .customButton(
                 foregroundColor: .white,
@@ -54,7 +52,6 @@ struct NoteDetailView: View {
 
 struct NoteDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        // Mock data for the preview
         let mockNote = TranscribedNote(
             title: "Sample Note",
             content: "This is a test note.",
