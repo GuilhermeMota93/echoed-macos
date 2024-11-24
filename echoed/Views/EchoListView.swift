@@ -78,7 +78,6 @@ struct EchoListView: View {
         }
     }
     
-    /// Handle tap gesture, detecting modifiers for multi-select
     private func handleTapGesture(for note: TranscribedNote) {
         let modifiers = NSApp.currentEvent?.modifierFlags ?? []
         if modifiers.contains(.shift) {
@@ -90,7 +89,6 @@ struct EchoListView: View {
         }
     }
     
-    /// Determine the background color for a note
     private func noteBackgroundColor(for note: TranscribedNote) -> Color {
         if viewModel.selectedForBulkDelete.contains(note) {
             return Color.blue.opacity(0.2)
@@ -102,13 +100,10 @@ struct EchoListView: View {
 
 struct EchoListView_Previews: PreviewProvider {
     static var previews: some View {
-        // In-memory ModelContainer for testing
         let container = try! ModelContainer(for: TranscribedNote.self)
         
-        // Mock EchoListViewModel using the in-memory context
         let mockViewModel = EchoListViewModel(modelContext: container.mainContext)
         
-        // Mock data for preview
         let previewNotes = [
             TranscribedNote(title: "First Note", timestamp: Date().addingTimeInterval(-3600)),
             TranscribedNote(title: "Second Note", timestamp: Date())
@@ -116,6 +111,6 @@ struct EchoListView_Previews: PreviewProvider {
         previewNotes.forEach { container.mainContext.insert($0) }
         
         return EchoListView(viewModel: mockViewModel)
-            .modelContainer(container) // Inject the in-memory container
+            .modelContainer(container)
     }
 }
