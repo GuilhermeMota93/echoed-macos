@@ -1,92 +1,65 @@
-# Xcode
-#
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
 
-## User settings
-xcuserdata/
-
-## Obj-C/Swift specific
-*.hmap
-
-## App packaging
-*.ipa
-*.dSYM.zip
-*.dSYM
-
-## Playgrounds
-timeline.xctimeline
-playground.xcworkspace
-
-## Xcode compatibility with earlier versions (ignoring not required starting Xcode 9)
+# User-specific Xcode files
+*.xcuserdata/
+*.xcuserstate
 *.xcscmblueprint
-*.xccheckout
 
-## Xcode compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
-build/
+# Build artifacts and intermediate files
 DerivedData/
-*.moved-aside
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
+build/
+*.dSYM
+*.ipa
 
 # Swift Package Manager
-#
-# Add these lines if you want to avoid checking in source code from Swift Package Manager dependencies
-Packages/
-Package.pins
-Package.resolved
-*.xcodeproj
-
 .build/
+Packages/
+Package.resolved
+Package.pins
 
 # CocoaPods
-#
-# We recommend against adding the Pods directory to your .gitignore.
-# Judge based on your use case: https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
 Pods/
+Podfile.lock
 
 # Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
 Carthage/Build/
 Carthage/Checkouts
 
-# Accio dependency management
-Dependencies/
-.accio/
-
 # fastlane
-#
-# It is recommended not to store screenshots in the git repo.
-# Instead, use fastlane to re-generate the screenshots whenever needed.
-# More info: https://docs.fastlane.tools/best-practices/source-control/#source-control
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output/
 
-# Code Injection
-#
-# After using code injection tools, a generated folder /iOSInjectionProject appears
-# More info: https://github.com/johnno1962/injectionforxcode
-iOSInjectionProject/
-
-# macOS specific
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# SwiftData
-*.sqlite
-*.sqlite-shm
-*.sqlite-wal
-
-# Sensitive Information
+# Sensitive information
 *.pem
 *.key
 *.p12
+
+# Logs
+*.log
+
+# Temporary files
+*.swp
+*.swo
+
+# Xcode workspace settings (optional, if shared settings are not needed)
+*.xcworkspace
+
+# Core Data generated files
+*.xccurrentversion
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# App Store Connect and Testing
+*.xcarchive
+*.xcreport
+
+# Git-specific files
+.git/
+
