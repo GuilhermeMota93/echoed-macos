@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DD250A5C2D31A84B00F11B20 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD250A5B2D31A84B00F11B20 /* Secrets.plist */; };
 		DD6175BD2D31256000110885 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = DD6175BC2D31256000110885 /* RevenueCat */; };
+		DDE3AAB02D31AFC800A5448E /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDE3AAAF2D31AFC800A5448E /* Secrets.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,10 +29,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		DD250A5B2D31A84B00F11B20 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		DD6175142D306C3200110885 /* echoed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = echoed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD6175272D306C3300110885 /* echoedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = echoedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD6175312D306C3300110885 /* echoedUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = echoedUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDE3AAAF2D31AFC800A5448E /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -82,7 +82,7 @@
 		DD61750B2D306C3200110885 = {
 			isa = PBXGroup;
 			children = (
-				DD250A5B2D31A84B00F11B20 /* Secrets.plist */,
+				DDE3AAAF2D31AFC800A5448E /* Secrets.plist */,
 				DD6175162D306C3200110885 /* echoed */,
 				DD61752A2D306C3300110885 /* echoedTests */,
 				DD6175342D306C3300110885 /* echoedUITests */,
@@ -227,7 +227,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD250A5C2D31A84B00F11B20 /* Secrets.plist in Resources */,
+				DDE3AAB02D31AFC800A5448E /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
