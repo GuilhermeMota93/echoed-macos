@@ -63,3 +63,5 @@ playground.xcworkspace
 # Git-specific files
 .git/
 
+# Ignore secrets file
+Secrets.plist

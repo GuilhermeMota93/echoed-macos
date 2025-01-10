@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DD250A5C2D31A84B00F11B20 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD250A5B2D31A84B00F11B20 /* Secrets.plist */; };
+		DD6175BD2D31256000110885 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = DD6175BC2D31256000110885 /* RevenueCat */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		DD6175282D306C3300110885 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DD250A5B2D31A84B00F11B20 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		DD6175142D306C3200110885 /* echoed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = echoed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD6175272D306C3300110885 /* echoedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = echoedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD6175312D306C3300110885 /* echoedUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = echoedUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD6175BD2D31256000110885 /* RevenueCat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +82,7 @@
 		DD61750B2D306C3200110885 = {
 			isa = PBXGroup;
 			children = (
+				DD250A5B2D31A84B00F11B20 /* Secrets.plist */,
 				DD6175162D306C3200110885 /* echoed */,
 				DD61752A2D306C3300110885 /* echoedTests */,
 				DD6175342D306C3300110885 /* echoedUITests */,
@@ -112,6 +120,10 @@
 			);
 			name = echoed;
 			packageProductDependencies = (
+				DD6175BA2D31256000110885 /* ReceiptParser */,
+				DD6175BC2D31256000110885 /* RevenueCat */,
+				DD6175BE2D31256000110885 /* RevenueCatUI */,
+				DD6175C02D31256000110885 /* RevenueCat_CustomEntitlementComputation */,
 			);
 			productName = echoed;
 			productReference = DD6175142D306C3200110885 /* echoed.app */;
@@ -195,6 +207,9 @@
 			);
 			mainGroup = DD61750B2D306C3200110885;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DD6175B92D31256000110885 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DD6175152D306C3200110885 /* Products */;
 			projectDirPath = "";
@@ -212,6 +227,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD250A5C2D31A84B00F11B20 /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -551,6 +567,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DD6175B92D31256000110885 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.14.5;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DD6175BA2D31256000110885 /* ReceiptParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD6175B92D31256000110885 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = ReceiptParser;
+		};
+		DD6175BC2D31256000110885 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD6175B92D31256000110885 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+		DD6175BE2D31256000110885 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD6175B92D31256000110885 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCatUI;
+		};
+		DD6175C02D31256000110885 /* RevenueCat_CustomEntitlementComputation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD6175B92D31256000110885 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat_CustomEntitlementComputation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD61750C2D306C3200110885 /* Project object */;
 }
